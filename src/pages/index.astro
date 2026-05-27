@@ -1,0 +1,56 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+
+const projects = [
+  {
+    title: "Lunar Rover Autonomy",
+    oneLiner:
+      "C++/ROS2 autonomy stack with D* Lite replanning, lidar obstacle updates, and spline trajectory tracking.",
+    tags: ["C++", "ROS2", "D* Lite", "EKF", "Linux"],
+    // no href — card renders as non-clickable
+  },
+  {
+    title: "Support-Polygon Quadruped Gait Planner",
+    oneLiner:
+      "Nonlinear MPC and geometry-based gait scheduler using support-polygon stability margins.",
+    tags: ["C++", "MPC", "SQP", "Robotics"],
+    href: "/projects/support-polygon/",
+  },
+  {
+    title: "Low-Thrust Spacecraft Guidance",
+    oneLiner:
+      "Indirect-shooting trajectory optimization with Kustaanheimo-Stiefel regularization for fuel-optimal asteroid rendezvous.",
+    tags: ["MATLAB", "Astrodynamics", "Trajectory Optimization"],
+    href: "/projects/low-thrust/",
+  },
+  {
+    title: "Hypersonic Inlet Optimization",
+    oneLiner:
+      "CMA-ES-based scramjet inlet and mold-line optimization with geometry-validity constraints.",
+    tags: ["Optimization", "CMA-ES", "Hypersonics"],
+    href: "/projects/hypersonic/",
+  },
+  {
+    title: "Microfluidic Experimental Platform",
+    oneLiner:
+      "Coaxial-flow nanoparticle synthesis testbed with Poiseuille-tuned pneumatic pressure regulation.",
+    tags: ["Experimental", "Fluid Mechanics", "Instrumentation"],
+    href: "/projects/nist/",
+  },
+];
+---
+
+<Layout>
+  <h1 class="text-4xl font-bold">Srikrishnan Sridhar</h1>
+  <p class="mt-2 text-lg text-gray-600">Spacecraft & Robotic Autonomy</p>
+  <p class="mt-6 text-gray-700 leading-relaxed">
+    I build guidance, estimation, planning, and control systems for autonomous
+    aerospace and robotic platforms.
+  </p>
+
+  <h2 class="mt-12 text-2xl font-semibold">Selected Work</h2>
+  <div class="mt-6 grid gap-4">
+    {projects.map((p) => <ProjectCard {...p} />)}
+  </div>
+</Layout>
