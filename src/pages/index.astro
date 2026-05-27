@@ -1,56 +1,1714 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import ProjectCard from "../components/ProjectCard.astro";
+import Layout from '../layouts/Layout.astro';
+
+type Project = {
+  id: string;
+  title: string;
+  oneLiner: string;
+  tags: string[];
+  image: string | null;
+  role: string;
+  problem: string;
+  method: string;
+  results: string;
+  implemented: boolean;
+  links: { label: string; url: string }[];
+};
 
 const projects = [
   {
-    title: "Lunar Rover Autonomy",
-    oneLiner:
-      "C++/ROS2 autonomy stack with D* Lite replanning, lidar obstacle updates, and spline trajectory tracking.",
-    tags: ["C++", "ROS2", "D* Lite", "EKF", "Linux"],
-    // no href — card renders as non-clickable
+    id: 'support-polygon',
+    title: 'Support-Polygon Quadruped Gait Planner',
+    oneLiner: 'Nonlinear MPC and geometry-based gait scheduler using support-polygon stability margins.',
+    tags: ['C++', 'MPC', 'SQP', 'Robotics'],
+    image: null,
+    role: 'Sole developer (controls and gait planning).',
+    problem: 'Quadruped locomotion requires coordinating leg lifts and body pose to maintain stability while tracking a desired path.',
+    method: 'Formulated nonlinear MPC as a 15-state direct-shooting SQP with support-polygon area, attitude tracking, and L2 smoothing objectives. Developed a second-pass geometric heuristic selecting the next leg to lift by maximizing body-centroid stability margin within the resulting 3-leg support polygon.',
+    results: 'Sub-10 s solve times. Geometric heuristic provided a tractable alternative to whole-body control for stable gait scheduling.',
+    implemented: true,
+    links: [],
   },
   {
-    title: "Support-Polygon Quadruped Gait Planner",
-    oneLiner:
-      "Nonlinear MPC and geometry-based gait scheduler using support-polygon stability margins.",
-    tags: ["C++", "MPC", "SQP", "Robotics"],
-    href: "/projects/support-polygon/",
+    id: 'lunar-rover',
+    title: 'Lunar Rover Autonomy',
+    oneLiner: 'C++/ROS2 autonomy stack with D* Lite replanning, lidar obstacle updates, and spline trajectory tracking.',
+    tags: ['C++', 'ROS2', 'D* Lite', 'EKF', 'Linux'],
+    image: null,
+    role: 'GNC & Flight Software Engineer, capstone team of 20 (Intuitive Machines / New Ascent partnership).',
+    problem: 'Building a flight-software-realistic autonomy stack for a lunar micro-rover demonstrated live at the 2026 UMD Capstone Expo.',
+    method: 'Co-derived continuous-time MEKF and translational EKF in C++/MATLAB; integrated TRIAD with IMU gravity and sun-vector measurements. Designed sliding mode controller validated across 400K+ Monte Carlo runs. Architected C++/ROS2 autonomy stack with D* Lite replanning and spline trajectory tracking on Linux.',
+    results: '~5 deg max attitude error, ~1 cm position tracking. Aerospace Engineering Department Award at 2026 UMD Capstone Expo.',
+    implemented: false,
+    links: [],
   },
   {
-    title: "Low-Thrust Spacecraft Guidance",
-    oneLiner:
-      "Indirect-shooting trajectory optimization with Kustaanheimo-Stiefel regularization for fuel-optimal asteroid rendezvous.",
-    tags: ["MATLAB", "Astrodynamics", "Trajectory Optimization"],
-    href: "/projects/low-thrust/",
+    id: 'low-thrust',
+    title: 'Low-Thrust Spacecraft Guidance',
+    oneLiner: 'Indirect-shooting trajectory optimization with Kustaanheimo-Stiefel regularization for fuel-optimal asteroid rendezvous.',
+    tags: ['MATLAB', 'Astrodynamics', 'Trajectory Optimization'],
+    image: null,
+    role: 'Research engineer, UMD Space Power and Propulsion Lab (2024-2026).',
+    problem: 'Indirect methods for low-thrust trajectory optimization suffer from adjoint dynamics instability and poor numerical conditioning, limiting practical use.',
+    method: 'Developed indirect low-thrust framework from scratch in MATLAB. Diagnosed adjoint dynamics instability and implemented a stabilizing approximation. Formulated Kustaanheimo-Stiefel regularized dynamics for fuel-optimal indirect shooting and built a mission design pipeline integrating NASA Horizons ephemeris and a Lambert solver.',
+    results: '5x reduction in solve time, 3-5x faster convergence across 20+ tested scenarios. Published in AIAA Regional Student Conference 2026.',
+    implemented: false,
+    links: [],
   },
   {
-    title: "Hypersonic Inlet Optimization",
-    oneLiner:
-      "CMA-ES-based scramjet inlet and mold-line optimization with geometry-validity constraints.",
-    tags: ["Optimization", "CMA-ES", "Hypersonics"],
-    href: "/projects/hypersonic/",
+    id: 'hypersonic',
+    title: 'Hypersonic Inlet Optimization',
+    oneLiner: 'Pattern-search scramjet inlet optimization with shock geometry and throat-gap constraints.',
+    tags: ['MATLAB', 'Pattern Search', 'Hypersonics'],
+    image: null,
+    role: 'Controls engineer, UCAH Hypersonic Missile Team (Boeing-affiliated).',
+    problem: 'Scramjet inlet design requires solving multi-ramp geometric optimization while maintaining shock-on-lip behavior, feasible ramp intersections, and a target throat height.',
+    method: 'Built a MATLAB sweep that fixes freestream conditions, searches the first shock angle, optimizes downstream shock angles with patternsearch, rejects invalid geometries, and exports the solved sweep for web visualization.',
+    results: 'Produced ranked candidate geometries by total pressure recovery and closest target throat gap, with ramp lengths, ramp angles, and shock miss distance available for follow-on CAD and CFD work.',
+    implemented: true,
+    links: [],
   },
   {
-    title: "Microfluidic Experimental Platform",
-    oneLiner:
-      "Coaxial-flow nanoparticle synthesis testbed with Poiseuille-tuned pneumatic pressure regulation.",
-    tags: ["Experimental", "Fluid Mechanics", "Instrumentation"],
-    href: "/projects/nist/",
+    id: 'nist',
+    title: 'Microfluidic Experimental Platform',
+    oneLiner: 'Coaxial-flow nanoparticle synthesis testbed with Poiseuille-tuned pneumatic pressure regulation.',
+    tags: ['Experimental', 'Fluid Mechanics', 'Instrumentation'],
+    image: null,
+    role: 'Research engineer at NIST, U.S. Department of Commerce (summer 2025).',
+    problem: "Synthesizing monodisperse nanoparticles requires precise pressure regulation in a microfluidic system whose dynamics fall outside the pump actuator's effective bandwidth.",
+    method: "Designed and fabricated a coaxial microfluidic testbed. Used Poiseuille's equation to size tubing length, placing plant dynamics within pump actuator bandwidth. Characterized particles with in-line Dynamic Light Scattering and UV-Vis spectroscopy.",
+    results: 'Monodisperse sub-150 nm particles with <10 nm size variance; pressure regulation within 1% of setpoint. Contributed to manuscript in preparation for Soft Matter.',
+    implemented: false,
+    links: [],
+  },
+] satisfies Project[];
+
+const supportPolygonCodeSections = [
+  {
+    title: '1. Generate the Demo Trajectory',
+    explanation: 'The Python plotter builds a closed 3D path, then sends that trajectory into the C++ generator. The webpage render uses this same curve shape.',
+    code: `def trajectory3d(steps: int):
+    t = np.linspace(0, 1, steps)
+    x = np.sin(2 * np.pi * t)
+    y = np.cos(2 * np.pi * t)
+    z = np.cos(2 * np.pi * t)
+
+    G = np.empty((steps, 3))
+    G[:, 0] = x
+    G[:, 1] = y
+    G[:, 2] = z
+    return G`,
+  },
+  {
+    title: '2. Seed Quad Corner Positions',
+    explanation: 'The generator initializes the four support corners from robot length and width, then rotates and translates them along the desired body trajectory.',
+    code: `corners.row(0) = Eigen::Vector3d(+length / 2, -width / 2, z).transpose();
+corners.row(1) = Eigen::Vector3d(+length / 2, +width / 2, z).transpose();
+corners.row(2) = Eigen::Vector3d(-length / 2, +width / 2, z).transpose();
+corners.row(3) = Eigen::Vector3d(-length / 2, -width / 2, z).transpose();
+
+for (size_t k = 0; k < steps; k++) {
+    Eigen::Vector3d ok = k * slope + o0;
+    Eigen::RowVector3d pos_k = trajectory.row(k);
+    Eigen::Matrix3d Rk = RBI(ok[0], ok[1], ok[2]);
+
+    Stance corners_k = (corners * Rk.transpose()).rowwise() + pos_k;
+    x0.col(k).segment(0, 12) = corners_k.transpose().reshaped(1, 12).transpose();
+    x0.col(k).segment(12, 3) = ok;
+}`,
+  },
+  {
+    title: '3. Optimize Support Geometry',
+    explanation: 'The nonlinear cost keeps the support area near the nominal footprint, follows the body path, and smooths both corner motion and orientation.',
+    code: `Eigen::Vector3d ccentroid = mean(ccorners);
+Eigen::Vector3d ncentroid = mean(ncorners);
+
+Eigen::Vector3d pos_k = trajectory.row(k);
+J[0] += weights.w_tracking * (ccentroid - pos_k).squaredNorm();
+
+double A = area3d<4>(ccorners);
+J[0] += weights.w_area * std::pow(A - A0, 2);
+J[0] += weights.w_area_smoothness * (ncmapped - cmapped).rowwise().squaredNorm().sum();
+
+Eigen::Vector3d r_vec = ncentroid - ccentroid;
+Eigen::Vector3d r_vec_desired = trajectory.row(k + 1) - pos_k;
+J[0] += weights.w_trajectory * (r_vec - r_vec_desired).squaredNorm();`,
+  },
+  {
+    title: '4. Schedule the Next Leg',
+    explanation: 'The scheduler tests each leg advancement, scores it by centroid distance and step target distance, then advances the best candidate order.',
+    code: `for (int i = 0; i < 4; ++i) {
+    Eigen::Vector<size_t, 4> trial = curr;
+    trial[i] += 1;
+
+    auto fposfull = get_position_at(trial);
+    Eigen::Vector3d fpos = fposfull.row(i);
+    double rawP = priority(curr_pos, i, cntr, fposfull, fpos);
+
+    double biased = std::log10(std::abs(rawP)) - static_cast<double>(curr[i]) + minimum;
+    priorities[i] = biased;
+}
+
+int best = std::max_element(priorities, priorities + 4) - priorities;
+curr[best] += 1;`,
+  },
+  {
+    title: '5. Render Polygons and Body Axes',
+    explanation: 'The original plotter draws the trajectory, support polygon patches, and body-frame axes. The webpage implements this same visualization in Three.js.',
+    code: `for k in range(0, steps, 2):
+    pts = pp[k, :].reshape(4, 3)
+
+    poly = Poly3DCollection(
+        [pts],
+        alpha=0.75,
+        edgecolor='k',
+        linewidth=1,
+        facecolors=colors[int(k / 2) % 10],
+    )
+    ax.add_collection3d(poly)
+
+    R = orientation(pts)
+    p = np.mean(pts, axis=0)
+    ax.quiver(p[0], p[1], p[2], qscale * R[0, 0], qscale * R[1, 0], qscale * R[2, 0], color='r')
+    ax.quiver(p[0], p[1], p[2], qscale * R[0, 1], qscale * R[1, 1], qscale * R[2, 1], color='g')
+    ax.quiver(p[0], p[1], p[2], qscale * R[0, 2], qscale * R[1, 2], qscale * R[2, 2], color='b')`,
+  },
+];
+
+const cmaCodeSections = [
+  {
+    title: '1. Seed the ICC Control Points',
+    explanation: 'CMA-ES starts from the current ICC curve rather than a generic shape. The optimizer only moves the interior points, while the endpoints stay anchored to preserve the inlet-capture boundary.',
+    code: `icc_points = sample_curve(icc_curve, nsamples)
+x0 = icc_points[1:-1].reshape(-1)
+sigma0 = 0.03
+
+optimizer = cma.CMAEvolutionStrategy(
+    x0,
+    sigma0,
+    {'bounds': [lower_bounds, upper_bounds], 'popsize': 32}
+)`,
+  },
+  {
+    title: '2. Penalize Bad Evolutes',
+    explanation: 'The objective rewards an ICC that remains injective when projected through the waverider construction. Folded or self-overlapping evolute behavior is penalized before the geometry reaches the 3D plotter.',
+    code: `def objective(x):
+    control_points = rebuild_icc(x, fixed_endpoints)
+    waverider.icc_curve.set_points(control_points)
+
+    fct_projection = project_fct_to_icc(waverider)
+    injectivity = evolute_dot_loss(control_points, fct_projection)
+    smoothness = curvature_loss(control_points)
+    spacing = point_spacing_loss(control_points)
+
+    return injectivity + 0.2 * smoothness + 0.1 * spacing`,
+  },
+  {
+    title: '3. Compute the Injectivity Metric',
+    explanation: 'The metric compares local tangent direction changes along the ICC/FCT relationship. Large negative dot products indicate a reversal, which is the warning sign for an evolute fold.',
+    code: `def evolute_dot_loss(icc_points, fct_points):
+    icc_tangent = np.diff(icc_points, axis=0)
+    fct_tangent = np.diff(fct_points, axis=0)
+
+    icc_unit = normalize_rows(icc_tangent)
+    fct_unit = normalize_rows(fct_tangent)
+    dots = np.sum(icc_unit * fct_unit, axis=1)
+
+    return np.sum(np.clip(-dots, 0.0, None) ** 2)`,
+  },
+  {
+    title: '4. Rescale and Recenter the Result',
+    explanation: 'After CMA-ES finishes, the final ICC is centered and scaled back onto the FCT/ICC plotting frame. The webpage plots this corrected after-curve, then passes those control points into the 3D generator.',
+    code: `best_points = rebuild_icc(result.xbest, fixed_endpoints)
+best_points = optimizer.rescale_and_recenter(
+    best_points,
+    reference_curve=fct_points,
+    preserve_endpoints=True
+)
+
+return {
+    'final_control_points': best_points.tolist(),
+    'best_loss': result.fbest,
+}`,
+  },
+];
+
+const inletCodeSections = [
+  {
+    title: '1. Define the Design Space',
+    explanation: 'The script fixes the freestream conditions and cowl height, then sweeps cowl length and the first shock angle. This gives the optimizer a compact grid of physically meaningful starting points.',
+    code: `M0      = 4.0;
+gamma   = 1.4;
+N_ramps = 3;
+
+Yc = 0.28 + 0.05;              % Fixed cowl height [m]
+Target_Intake_Height = 0.05;   % Desired throat gap [m]
+
+num_Xc = 1;
+Xc_min = 0.5;
+Xc_max = 1.3;
+
+num_beta1 = 50;
+beta1_min_deg = rad2deg(asin(1/M0)) + 0.1;
+beta1_max_deg = 40;`,
+  },
+  {
+    title: '2. Build the Sweep Grid',
+    explanation: 'The candidate cowl lengths and initial shock angles are flattened into a job list. That shape is friendly to parfor, so the same setup can scale from a quick run to a denser design sweep.',
+    code: `Xc_tests = linspace(Xc_min, Xc_max, num_Xc);
+beta1_tests = deg2rad(linspace(beta1_min_deg, beta1_max_deg, num_beta1));
+
+[Xc_grid, b1_grid] = ndgrid(Xc_tests, beta1_tests);
+Xc_flat_in = Xc_grid(:);
+b1_flat_in = b1_grid(:);
+
+num_jobs = length(Xc_flat_in);
+results_cell = cell(num_jobs, 1);`,
+  },
+  {
+    title: '3. Optimize the Internal Shock Train',
+    explanation: 'For each first-shock candidate, patternsearch chooses the remaining shock angles. Bounds enforce a valid inlet: shocks must stay downstream, below the cowl, and above each local Mach angle.',
+    code: `cost_func = @(betas) objective_wrapper( ...
+    b1, betas, M0, Xc_current, Yc, gamma, N_ramps);
+
+[optim_betas, fval, exitflag] = patternsearch( ...
+    cost_func, x0, A, b_vec, [], [], lb, ub, [], ps_opts);
+
+if fval < 0 && exitflag > 0
+    [~, sol] = calc_ramp_physics( ...
+        b1, optim_betas, M0, Xc_current, Yc, gamma, N_ramps);
+    sol.Throat = Yc - sol.ys(end);
+    results_cell{k} = sol;
+end`,
+  },
+  {
+    title: '4. Score Pressure Recovery',
+    explanation: 'The physics model chains oblique shocks, computes total pressure recovery across each ramp, then applies a terminal normal shock at the throat. Invalid geometries return early and never enter the final dataset.',
+    code: `function [tpr_final, s] = calc_ramp_physics(b1, betas, M0, Xc, Yc, gamma, N)
+    [~, M2, tpr1] = oblique(M0, b1, gamma);
+    s.Machs(2) = M2;
+    s.tprs(1) = tpr1;
+
+    for ramp = 2:N
+        b_rel = b_abs - theta_abs_prev;
+        mu = asin(1 / s.Machs(ramp));
+        if b_rel <= mu || b_rel >= pi/2
+            return;
+        end
+        [~, M_next, tpr] = oblique(s.Machs(ramp), b_rel, gamma);
+        s.tprs(ramp) = tpr;
+    end
+
+    [~, ~, tpr_normal] = oblique(M_throat, pi/2, gamma);
+    s.TPR = prod(s.tprs) * tpr_normal;
+    tpr_final = s.TPR;
+end`,
+  },
+  {
+    title: '5. Export Portfolio Data',
+    explanation: 'The web export stores only the clean sweep points and selected solutions. That keeps the browser focused on storytelling while MATLAB remains the source of truth for the numerical solve.',
+    code: `web_export = struct();
+web_export.inputs = struct( ...
+    'M0', M0, ...
+    'gamma', gamma, ...
+    'N_ramps', N_ramps, ...
+    'target_throat_m', Target_Intake_Height);
+
+web_export.points = web_points;
+web_export.best_tpr_solution = best_tpr_sol;
+web_export.target_solution = target_sol;
+
+fid = fopen('ucah_sweep_results.json', 'w');
+fwrite(fid, jsonencode(web_export), 'char');
+fclose(fid);`,
   },
 ];
 ---
-
 <Layout>
-  <h1 class="text-4xl font-bold">Srikrishnan Sridhar</h1>
-  <p class="mt-2 text-lg text-gray-600">Spacecraft & Robotic Autonomy</p>
-  <p class="mt-6 text-gray-700 leading-relaxed">
-    I build guidance, estimation, planning, and control systems for autonomous
-    aerospace and robotic platforms.
-  </p>
+  <main class="max-w-2xl mx-auto px-5 py-12">
+    <header class="border-b border-stone-200 pb-8 mb-10">
+      <h1 class="text-3xl font-semibold tracking-tight">Srikrishnan Sridhar</h1>
+      <p class="mt-1 text-stone-600">Spacecraft & Robotic Autonomy</p>
+      <p class="mt-4 text-stone-700 leading-relaxed text-[15px]">
+        I build guidance, estimation, planning, and control systems for autonomous aerospace and robotic platforms. B.S. Aerospace Engineering & Applied Mathematics, University of Maryland (2026). Incoming graduate student, Johns Hopkins Robotics.
+      </p>
+      <div class="mt-4 flex gap-4 text-sm text-stone-600">
+        <a href="mailto:skrish18@terpmail.umd.edu" class="hover:text-stone-900 underline-offset-2 hover:underline">Email</a>
+        <a href="https://linkedin.com/in/srikrishnansridhar" class="hover:text-stone-900 underline-offset-2 hover:underline">LinkedIn</a>
+        <a href="https://github.com/KrishTheDuck" class="hover:text-stone-900 underline-offset-2 hover:underline">GitHub</a>
+      </div>
+    </header>
 
-  <h2 class="mt-12 text-2xl font-semibold">Selected Work</h2>
-  <div class="mt-6 grid gap-4">
-    {projects.map((p) => <ProjectCard {...p} />)}
-  </div>
+    <section>
+      <h2 class="text-xs uppercase tracking-wider text-stone-500 mb-4">Selected Work</h2>
+      <div class="space-y-3">
+        {projects.map((p) => (
+          <button
+            data-modal-id={p.id}
+            class={`project-trigger w-full text-left flex gap-4 p-4 border rounded transition-colors ${p.implemented ? 'border-stone-300 bg-white hover:border-stone-500' : 'draft-project border-stone-200 bg-stone-100/60 hover:border-stone-300 hover:bg-stone-100'}`}
+          >
+            <div class={`flex-shrink-0 w-20 h-20 border rounded flex items-center justify-center overflow-hidden ${p.implemented ? 'bg-stone-100 border-stone-200' : 'bg-stone-200 border-stone-300'}`}>
+              {p.image ? (
+                <img src={p.image} alt={p.title} class="w-full h-full object-cover" />
+              ) : (
+                <span class="text-[10px] text-stone-400 text-center px-1 leading-tight">{p.title.split(' ').slice(0, 3).join(' ')}</span>
+              )}
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-medium text-stone-900">{p.title}</h3>
+              <p class="mt-1 text-sm text-stone-600 leading-snug">{p.oneLiner}</p>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                {p.tags.map((tag) => (
+                  <span class="text-[11px] px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <footer class="mt-16 pt-8 border-t border-stone-200 text-sm text-stone-500">
+      <p>© 2026 Srikrishnan Sridhar · College Park, MD</p>
+    </footer>
+  </main>
+
+  {projects.map((p) => (
+    <dialog id={`modal-${p.id}`} class="project-modal">
+      <div class="modal-content">
+        <div class="flex items-start justify-between mb-4">
+          <h2 class="text-xl font-semibold pr-8">{p.title}</h2>
+          <button class="close-modal text-stone-400 hover:text-stone-900 text-2xl leading-none" aria-label="Close">×</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mb-6">
+          {p.tags.map((tag) => (
+            <span class="text-[11px] px-1.5 py-0.5 bg-stone-100 text-stone-600 rounded">{tag}</span>
+          ))}
+        </div>
+
+        {p.id === 'support-polygon' && (
+          <div class="space-y-6 mb-7">
+            <section class="support-hero">
+              <video controls muted loop playsinline preload="metadata">
+                <source src="/testudog-support-polygon.webm" type="video/webm" />
+              </video>
+              <p>Support-polygon gait planning demo from the Testudog stack. The planner uses stance-foot geometry to decide which leg can safely swing next while preserving body stability.</p>
+            </section>
+
+            <section class="support-plot-panel">
+              <div>
+                <h3>Live Support-Polygon Generator</h3>
+                <p>Enter trajectory functions of t, sample the backend generator, and render the returned support polygons in the browser.</p>
+              </div>
+              <form id="support-polygon-form" class="support-form">
+                <label><span>x(t)</span><input name="x_expr" value="sin(2*pi*t)" /></label>
+                <label><span>y(t)</span><input name="y_expr" value="cos(2*pi*t)" /></label>
+                <label><span>z(t)</span><input name="z_expr" value="0.55*cos(2*pi*t)" /></label>
+                <label><span>Samples</span><input name="samples" type="number" min="4" max="160" step="1" value="30" /></label>
+                <label><span>Length</span><input name="length" type="number" min="0.02" step="0.01" value="0.34" /></label>
+                <label><span>Width</span><input name="width" type="number" min="0.02" step="0.01" value="0.18" /></label>
+                <button type="button" id="run-support-polygon" class="primary-action">Generate</button>
+              </form>
+              <div id="support-polygon-status" class="waverider-status">Ready.</div>
+              <div class="interactive-plot-shell">
+                <div id="support-polygon-plot" class="interactive-plot"></div>
+                <div class="plot-legend" aria-label="Support polygon legend">
+                  <span class="legend-trajectory">Trajectory</span>
+                  <span class="legend-support">Support polygon</span>
+                  <span class="legend-xaxis">Body X</span>
+                  <span class="legend-yaxis">Body Y</span>
+                  <span class="legend-zaxis">Body Z</span>
+                  <span class="legend-gait">Animated gait</span>
+                </div>
+                <p id="support-polygon-summary">Support polygons rendered from backend trajectory samples.</p>
+              </div>
+            </section>
+
+            <section class="support-grid">
+              <article>
+                <h3>Geometry Layer</h3>
+                <p>Transforms active foot contacts into a convex support polygon and measures body-center margin against each edge.</p>
+              </article>
+              <article>
+                <h3>Gait Scheduler</h3>
+                <p>Simulates each possible leg lift and chooses the swing leg that leaves the largest remaining support margin.</p>
+              </article>
+              <article>
+                <h3>MPC Interface</h3>
+                <p>Packages the swing-leg decision into a trajectory command for pose tracking, contact timing, and smoothing costs.</p>
+              </article>
+            </section>
+
+            <div class="code-walkthrough">
+              <div class="code-intro">
+                <h3>Support-Polygon Gait Planner Code</h3>
+                <p>The snippets below capture the planner structure: contact filtering, convex-hull construction, signed stability margin, swing-leg selection, and MPC handoff.</p>
+              </div>
+              {supportPolygonCodeSections.map((section) => (
+                <section class="code-section">
+                  <h3>{section.title}</h3>
+                  <p>{section.explanation}</p>
+                  <pre><code>{section.code}</code></pre>
+                </section>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {p.id === 'hypersonic' && (
+          <div class="space-y-6 mb-7">
+            <section class="waverider-panel">
+              <div class="waverider-panel-header">
+                <div>
+                  <h3>Run Waverider Generator</h3>
+                  <p>Adjust the input deck, generate the geometry, and rotate the returned 3D plot directly here.</p>
+                </div>
+                <button type="button" id="plot-waverider" class="primary-action">Plot 3D</button>
+              </div>
+
+              <div class="waverider-workbench">
+                <form id="waverider-form" class="waverider-form">
+                  <label>
+                    <span>Mach</span>
+                    <input name="mach" type="number" step="0.1" value="4" />
+                  </label>
+                  <label>
+                    <span>Gamma</span>
+                    <input name="gamma" type="number" step="0.01" value="1.4" />
+                  </label>
+                  <label>
+                    <span>Shock beta</span>
+                    <input name="beta" type="number" step="0.5" value="20" />
+                  </label>
+                  <label>
+                    <span>Seed points</span>
+                    <input name="seed_num" type="number" step="2" value="101" />
+                  </label>
+                  <label>
+                    <span>Ghost points</span>
+                    <input name="nghost" type="number" step="1" value="5" />
+                  </label>
+                  <label>
+                    <span>Span</span>
+                    <input name="span" type="number" step="0.05" value="0.5" />
+                  </label>
+                <label>
+                  <span>CMA ctrl pts</span>
+                  <input name="nsamples" type="number" step="1" value="9" />
+                </label>
+                  <label>
+                    <span>FCT type</span>
+                    <select name="fct_type">
+                      <option selected>Cosine</option>
+                      <option>Power</option>
+                      <option>Absolute Value</option>
+                      <option>Circle</option>
+                    </select>
+                  </label>
+                  <label class="wide">
+                    <span>FCT a,b,c,d,n</span>
+                    <input name="fct_abcdn" value="-0.1,4,0,-0.11,1" />
+                  </label>
+                  <label>
+                    <span>ICC type</span>
+                    <select name="icc_type">
+                      <option selected>Cosine</option>
+                      <option>Power</option>
+                      <option>Absolute Value</option>
+                      <option>Circle</option>
+                    </select>
+                  </label>
+                  <label class="wide">
+                    <span>ICC a,b,c,d,n</span>
+                    <input name="icc_abcdn" value="0.01,4,0,0,1" />
+                  </label>
+                </form>
+
+                <aside class="equation-preview">
+                  <div class="equation-row">
+                    <span>FCT</span>
+                    <code id="fct-equation"></code>
+                  </div>
+                  <div class="equation-row">
+                    <span>ICC</span>
+                    <code id="icc-equation"></code>
+                  </div>
+                  <svg id="curve-preview" viewBox="0 0 360 220" role="img" aria-label="Live FCT and ICC curve preview">
+                    <rect x="0" y="0" width="360" height="220" rx="8"></rect>
+                    <path id="fct-preview-path"></path>
+                    <path id="icc-preview-path"></path>
+                    <line x1="24" y1="196" x2="336" y2="196"></line>
+                    <line x1="180" y1="24" x2="180" y2="196"></line>
+                  </svg>
+                </aside>
+              </div>
+
+              <div id="waverider-status" class="waverider-status">Ready.</div>
+              <div id="waverider-results" class="waverider-results" hidden>
+                <div class="interactive-plot-shell">
+                  <div id="waverider-plotly" class="interactive-plot"></div>
+                  <div class="plot-legend" aria-label="3D plot legend">
+                    <span class="legend-bottom">Bottom surface</span>
+                    <span class="legend-top">Top surface</span>
+                    <span class="legend-shock">Attached shock</span>
+                    <span class="legend-leading">Leading edge</span>
+                  </div>
+                  <p id="waverider-summary">Generated 3D waverider geometry.</p>
+                </div>
+                <figure id="fallback-figure" class="inlet-figure result-figure" hidden>
+                  <img id="fallback-plot" src="" alt="Fallback ICC, FCT, and evolute curves" />
+                  <figcaption>Improper input fallback: FCT, ICC, and clipped evolute curves.</figcaption>
+                </figure>
+                <pre id="waverider-log" class="waverider-log"></pre>
+              </div>
+            </section>
+
+            <section class="cma-panel">
+              <div>
+                <h3>CMA-ES Optimization</h3>
+                <p>Actual CMA-ES output generated from the initial waverider inputs.</p>
+              </div>
+              <figure class="static-cma-figure" aria-label="Static CMA-ES before and after curve plot">
+                <img src="/hypersonic-cma-icc-before-after.png" alt="Actual CMA-ES ICC before and after output plotted against FCT" />
+                <figcaption>Initial inputs: Mach 4, gamma 1.4, shock beta 20 deg, seed points 101, ghost points 5, span 0.5 m, CMA control points 9, FCT Cosine [-0.1, 4, 0, -0.11, 1], ICC Cosine [0.01, 4, 0, 0, 1]. CMA-ES run: 80 generations, popsize 32.</figcaption>
+              </figure>
+            </section>
+
+            <div class="code-walkthrough">
+              <div class="code-intro">
+                <h3>CMA-ES and Evolute Injectivity Metric</h3>
+                <p>The optimizer edits ICC control points, scores each candidate with an evolute-injectivity penalty, and sends the final centered curve back into the browser plotter.</p>
+              </div>
+              {cmaCodeSections.map((section) => (
+                <section class="code-section">
+                  <h3>{section.title}</h3>
+                  <p>{section.explanation}</p>
+                  <pre><code>{section.code}</code></pre>
+                </section>
+              ))}
+            </div>
+
+            <section class="inlet-live-panel">
+              <div>
+                <h3>Live Inlet Geometry</h3>
+                <p>Run the inlet sweep with editable geometry inputs and refresh the TPR, throat, and target geometry plots.</p>
+              </div>
+              <button type="button" id="run-inlet-matlab" class="secondary-action">Run Inlet Sweep</button>
+              <form id="inlet-form" class="inlet-form">
+                <label><span>Mach</span><input name="mach" type="number" step="0.1" value="4" /></label>
+                <label><span>Gamma</span><input name="gamma" type="number" step="0.01" value="1.4" /></label>
+                <label><span>Ramps</span><input name="n_ramps" type="number" step="1" value="3" /></label>
+                <label><span>Yc</span><input name="y_c" type="number" step="0.01" value="0.33" /></label>
+                <label><span>Target throat</span><input name="target_throat" type="number" step="0.005" value="0.05" /></label>
+                <label><span>X count</span><input name="num_x" type="number" step="1" value="1" /></label>
+                <label><span>X min</span><input name="x_min" type="number" step="0.05" value="0.5" /></label>
+                <label><span>X max</span><input name="x_max" type="number" step="0.05" value="1.3" /></label>
+                <label><span>Beta count</span><input name="num_beta" type="number" step="1" value="50" /></label>
+                <label><span>Beta min</span><input name="beta_min_deg" type="number" step="0.1" value="14.58" /></label>
+                <label><span>Beta max</span><input name="beta_max_deg" type="number" step="0.5" value="40" /></label>
+              </form>
+              <div id="inlet-matlab-status" class="waverider-status">Ready.</div>
+              <figure id="inlet-matlab-figure" class="inlet-figure result-figure" hidden>
+                <img id="inlet-matlab-plot" src="" alt="Live MATLAB inlet optimization plots" />
+                <figcaption>Live MATLAB output from the inlet optimization script.</figcaption>
+              </figure>
+            </section>
+
+            <div class="code-walkthrough">
+              <div class="code-intro">
+                <h3>Inlet Optimization Code</h3>
+                <p>The inlet section exposes the same sweep inputs used for the generated case: Mach 4, gamma 1.4, three ramps, 0.33 m cowl height, 0.05 m target throat, and 50 first-shock samples.</p>
+              </div>
+              {inletCodeSections.map((section) => (
+                <section class="code-section">
+                  <h3>{section.title}</h3>
+                  <p>{section.explanation}</p>
+                  <pre><code>{section.code}</code></pre>
+                </section>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="space-y-4 text-[15px] text-stone-700 leading-relaxed">
+          <div>
+            <h3 class="text-xs uppercase tracking-wider text-stone-500 mb-1">Role</h3>
+            <p>{p.role}</p>
+          </div>
+          <div>
+            <h3 class="text-xs uppercase tracking-wider text-stone-500 mb-1">Problem</h3>
+            <p>{p.problem}</p>
+          </div>
+          <div>
+            <h3 class="text-xs uppercase tracking-wider text-stone-500 mb-1">Method</h3>
+            <p>{p.method}</p>
+          </div>
+          <div>
+            <h3 class="text-xs uppercase tracking-wider text-stone-500 mb-1">Results</h3>
+            <p>{p.results}</p>
+          </div>
+          {p.links.length > 0 && (
+            <div>
+              <h3 class="text-xs uppercase tracking-wider text-stone-500 mb-1">Links</h3>
+              <div class="flex flex-wrap gap-3">
+                {p.links.map((link) => (
+                  <a href={link.url} class="underline underline-offset-2 hover:text-stone-900">{link.label}</a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </dialog>
+  ))}
 </Layout>
+
+<style>
+  .project-modal {
+    border: none;
+    border-radius: 8px;
+    padding: 0;
+    max-width: min(1040px, calc(100vw - 2rem));
+    width: min(1040px, calc(100vw - 2rem));
+    max-height: min(88vh, 920px);
+    background: #fafaf9;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: fixed;
+    inset: 0;
+    margin: auto;
+  }
+  .project-modal::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .modal-content {
+    padding: 1.75rem;
+    overflow-y: auto;
+    max-height: min(88vh, 920px);
+  }
+  .draft-project {
+    opacity: 0.46;
+    filter: grayscale(1);
+  }
+  .draft-project:hover {
+    opacity: 0.62;
+  }
+  .support-hero {
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .support-hero video {
+    background: #111827;
+    display: block;
+    max-height: 560px;
+    width: 100%;
+  }
+  .support-hero p {
+    border-top: 1px solid #e7e5e4;
+    color: #57534e;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0.85rem 1rem;
+  }
+  .support-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .support-grid article {
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .support-grid h3 {
+    color: #292524;
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+  }
+  .support-grid p {
+    color: #57534e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .support-plot-panel {
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .support-plot-panel h3 {
+    color: #292524;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  .support-plot-panel p {
+    color: #57534e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .support-form {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .support-form label {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .support-form span {
+    color: #57534e;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .support-form input {
+    border: 1px solid #d6d3d1;
+    border-radius: 6px;
+    color: #292524;
+    font-size: 0.82rem;
+    min-height: 2.1rem;
+    padding: 0.35rem 0.5rem;
+    width: 100%;
+  }
+  .inlet-figure {
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .inlet-figure img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    background: #fff;
+  }
+  .inlet-figure figcaption {
+    border-top: 1px solid #e7e5e4;
+    color: #57534e;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    padding: 0.65rem 0.8rem;
+  }
+  .result-figure img {
+    aspect-ratio: 16 / 10;
+  }
+  .waverider-panel {
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    background: #fff;
+    padding: 1rem;
+  }
+  .waverider-panel-header {
+    align-items: flex-start;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .waverider-panel h3 {
+    color: #292524;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  .waverider-panel p {
+    color: #57534e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .waverider-form {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .waverider-form label {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .waverider-form label.wide {
+    grid-column: span 2;
+  }
+  .waverider-form span {
+    color: #57534e;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .waverider-form input,
+  .waverider-form select {
+    border: 1px solid #d6d3d1;
+    border-radius: 6px;
+    color: #292524;
+    font-size: 0.86rem;
+    min-height: 2.25rem;
+    padding: 0.4rem 0.55rem;
+    width: 100%;
+  }
+  .primary-action,
+  .secondary-action {
+    border-radius: 6px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    min-height: 2.3rem;
+    padding: 0.45rem 0.8rem;
+    transition: background 140ms ease, border-color 140ms ease;
+  }
+  .primary-action {
+    align-self: end;
+    background: #1c1917;
+    color: #fafaf9;
+    grid-column: span 1;
+  }
+  .primary-action:disabled {
+    background: #a8a29e;
+  }
+  .secondary-action {
+    background: #fafaf9;
+    border: 1px solid #d6d3d1;
+    color: #292524;
+    flex: 0 0 auto;
+  }
+  .waverider-status {
+    color: #57534e;
+    font-size: 0.84rem;
+    margin-top: 0.9rem;
+  }
+  .waverider-workbench {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  }
+  .equation-preview {
+    border: 1px solid #e7e5e4;
+    border-radius: 8px;
+    display: grid;
+    gap: 0.7rem;
+    padding: 0.8rem;
+  }
+  .equation-row {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .equation-row span {
+    color: #57534e;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .equation-row code {
+    background: #f5f5f4;
+    border: 1px solid #e7e5e4;
+    border-radius: 6px;
+    color: #292524;
+    display: block;
+    font-size: 0.76rem;
+    min-height: 2.1rem;
+    overflow-wrap: anywhere;
+    padding: 0.45rem 0.55rem;
+  }
+  #curve-preview {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 8px;
+    height: auto;
+    width: 100%;
+  }
+  #curve-preview rect {
+    fill: #fff;
+  }
+  #curve-preview line {
+    stroke: #e7e5e4;
+    stroke-width: 1;
+  }
+  #fct-preview-path,
+  #icc-preview-path {
+    fill: none;
+    stroke-width: 3;
+  }
+  #fct-preview-path {
+    stroke: #16a34a;
+  }
+  #icc-preview-path {
+    stroke: #2563eb;
+  }
+  .waverider-results {
+    display: block;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .waverider-results[hidden] {
+    display: none;
+  }
+  .waverider-log {
+    background: #1c1917;
+    border-radius: 8px;
+    color: #fafaf9;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    margin-top: 1rem;
+    max-height: 190px;
+    overflow: auto;
+    padding: 0.9rem;
+    white-space: pre-wrap;
+  }
+  .interactive-plot-shell {
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+  }
+  .interactive-plot {
+    height: min(62vh, 620px);
+    min-height: 430px;
+    width: 100%;
+  }
+  .interactive-plot-shell p {
+    border-top: 1px solid #e7e5e4;
+    color: #57534e;
+    font-size: 0.8rem;
+    margin: 0;
+    padding: 0.65rem 0.8rem;
+  }
+  .plot-legend {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e7e5e4;
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem 0.8rem;
+    left: 0.75rem;
+    padding: 0.45rem 0.55rem;
+    position: absolute;
+    top: 0.75rem;
+    z-index: 2;
+  }
+  .plot-legend span {
+    align-items: center;
+    color: #44403c;
+    display: inline-flex;
+    font-size: 0.72rem;
+    gap: 0.35rem;
+  }
+  .plot-legend span::before {
+    border-radius: 999px;
+    content: '';
+    display: inline-block;
+    height: 0.55rem;
+    width: 0.55rem;
+  }
+  .legend-bottom::before {
+    background: #dc2626;
+  }
+  .legend-top::before {
+    background: #2563eb;
+  }
+  .legend-shock::before {
+    background: #16a34a;
+  }
+  .legend-leading::before {
+    background: #111827;
+  }
+  .legend-trajectory::before {
+    background: #111827;
+  }
+  .legend-support::before {
+    background: #0891b2;
+  }
+  .legend-xaxis::before {
+    background: #dc2626;
+  }
+  .legend-yaxis::before {
+    background: #16a34a;
+  }
+  .legend-zaxis::before {
+    background: #2563eb;
+  }
+  .legend-gait::before {
+    background: #f97316;
+  }
+  .cma-panel {
+    align-items: start;
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 1rem;
+  }
+  .cma-panel h3 {
+    color: #292524;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  .cma-panel p {
+    color: #57534e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .cma-panel figure {
+    grid-column: 1 / -1;
+  }
+  .static-cma-figure {
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .static-cma-figure img {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+  .static-cma-figure figcaption {
+    border-top: 1px solid #e7e5e4;
+    color: #57534e;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    padding: 0.7rem 0.8rem;
+  }
+  .inlet-live-panel figure[hidden],
+  #fallback-figure[hidden] {
+    display: none;
+  }
+  .inlet-live-panel {
+    align-items: start;
+    background: #fff;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 1rem;
+  }
+  .inlet-live-panel h3 {
+    color: #292524;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+  .inlet-live-panel p {
+    color: #57534e;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    margin: 0;
+  }
+  .inlet-live-panel .waverider-status,
+  .inlet-live-panel .inlet-form,
+  .inlet-live-panel figure {
+    grid-column: 1 / -1;
+  }
+  .inlet-form {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .inlet-form label {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .inlet-form span {
+    color: #57534e;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .inlet-form input {
+    border: 1px solid #d6d3d1;
+    border-radius: 6px;
+    color: #292524;
+    font-size: 0.82rem;
+    min-height: 2.1rem;
+    padding: 0.35rem 0.5rem;
+    width: 100%;
+  }
+  @media (max-width: 720px) {
+    .waverider-panel-header {
+      display: grid;
+    }
+    .waverider-form,
+    .waverider-workbench,
+    .support-form,
+    .support-grid,
+    .cma-panel,
+    .inlet-live-panel,
+    .inlet-form {
+      grid-template-columns: 1fr;
+    }
+    .waverider-form label.wide,
+    .primary-action {
+      grid-column: span 1;
+    }
+  }
+  .code-section {
+    border-top: 1px solid #e7e5e4;
+    padding-top: 1rem;
+  }
+  .code-walkthrough {
+    display: grid;
+    gap: 1rem;
+  }
+  .code-intro {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .code-intro h3 {
+    color: #292524;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem;
+  }
+  .code-intro p {
+    color: #57534e;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .code-section h3 {
+    color: #292524;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  .code-section p {
+    color: #57534e;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+  }
+  .code-section pre {
+    background: #1c1917;
+    border-radius: 8px;
+    color: #fafaf9;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+</style>
+
+<script>
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+  document.querySelectorAll('.project-trigger').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-modal-id');
+      const modal = document.getElementById(`modal-${id}`);
+      if (modal instanceof HTMLDialogElement) {
+        modal.showModal();
+        if (id === 'support-polygon') requestAnimationFrame(runSupportPolygonGenerator);
+      }
+    });
+  });
+  document.querySelectorAll('.close-modal').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      const dialog = (e.target as HTMLElement).closest('dialog');
+      if (dialog instanceof HTMLDialogElement) dialog.close();
+    });
+  });
+  document.querySelectorAll('dialog').forEach((dialog) => {
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog && dialog instanceof HTMLDialogElement) dialog.close();
+    });
+  });
+
+  const waveriderForm = document.getElementById('waverider-form');
+  const waveriderStatus = document.getElementById('waverider-status');
+  const waveriderResults = document.getElementById('waverider-results');
+  const waveriderPlotly = document.getElementById('waverider-plotly');
+  const fallbackFigure = document.getElementById('fallback-figure');
+  const fallbackPlot = document.getElementById('fallback-plot');
+  const waveriderSummary = document.getElementById('waverider-summary');
+  const waveriderLog = document.getElementById('waverider-log');
+  const plotWaverider = document.getElementById('plot-waverider');
+  const supportPolygonPlot = document.getElementById('support-polygon-plot');
+  const supportPolygonForm = document.getElementById('support-polygon-form');
+  const runSupportPolygon = document.getElementById('run-support-polygon');
+  const supportPolygonStatus = document.getElementById('support-polygon-status');
+  const supportPolygonSummary = document.getElementById('support-polygon-summary');
+  const runInletMatlab = document.getElementById('run-inlet-matlab');
+  const inletForm = document.getElementById('inlet-form');
+  const inletMatlabStatus = document.getElementById('inlet-matlab-status');
+  const inletMatlabFigure = document.getElementById('inlet-matlab-figure');
+  const inletMatlabPlot = document.getElementById('inlet-matlab-plot');
+  const fctEquation = document.getElementById('fct-equation');
+  const iccEquation = document.getElementById('icc-equation');
+  const fctPreviewPath = document.getElementById('fct-preview-path');
+  const iccPreviewPath = document.getElementById('icc-preview-path');
+
+  let threeRenderer: THREE.WebGLRenderer | null = null;
+  let threeScene: THREE.Scene | null = null;
+  let threeCamera: THREE.PerspectiveCamera | null = null;
+  let threeControls: OrbitControls | null = null;
+  let threeAnimation = 0;
+  let supportRenderer: THREE.WebGLRenderer | null = null;
+  let supportScene: THREE.Scene | null = null;
+  let supportCamera: THREE.PerspectiveCamera | null = null;
+  let supportControls: OrbitControls | null = null;
+  let supportAnimation = 0;
+  let supportPlaybackGroup: THREE.Group | null = null;
+
+  function parseNumberList(value: FormDataEntryValue | null) {
+    return String(value || '')
+      .split(',')
+      .map((part) => Number(part.trim()))
+      .filter((value) => Number.isFinite(value));
+  }
+
+  function collectWaveriderPayload() {
+    if (!(waveriderForm instanceof HTMLFormElement)) return {};
+    const formData = new FormData(waveriderForm);
+    return {
+      mach: Number(formData.get('mach')),
+      gamma: Number(formData.get('gamma')),
+      beta: Number(formData.get('beta')),
+      seed_num: Number(formData.get('seed_num')),
+      nghost: Number(formData.get('nghost')),
+      span: Number(formData.get('span')),
+      nsamples: Number(formData.get('nsamples')),
+      fct_type: String(formData.get('fct_type') || 'Cosine'),
+      fct_abcdn: parseNumberList(formData.get('fct_abcdn')),
+      icc_type: String(formData.get('icc_type') || 'Cosine'),
+      icc_abcdn: parseNumberList(formData.get('icc_abcdn')),
+    };
+  }
+
+  function curveValue(type: string, abcdn: number[], y: number, span: number) {
+    const [a = 0, b = 0, c = 0, d = 0, n = 1] = abcdn;
+    if (type === 'Power') return a * Math.pow(b * y - c, n) + d;
+    if (type === 'Absolute Value') return a * Math.pow(Math.abs(b * y - c), n) + d;
+    if (type === 'Circle') return a * Math.sqrt(Math.max(0, (0.5 * span) ** 2 - y ** 2)) + d;
+    return a * Math.pow(Math.cos(b * Math.PI * y - c), n) + d;
+  }
+
+  function equationText(type: string, values: number[]) {
+    const [a = 0, b = 0, c = 0, d = 0, n = 1] = values;
+    if (type === 'Power') return `z = ${a}(${b}y - ${c})^${n} + ${d}`;
+    if (type === 'Absolute Value') return `z = ${a}|${b}y - ${c}|^${n} + ${d}`;
+    if (type === 'Circle') return `z = ${a}sqrt((span/2)^2 - y^2) + ${d}`;
+    return `z = ${a}cos(${b}πy - ${c})^${n} + ${d}`;
+  }
+
+  function pathFromPoints(points: { x: number; y: number }[]) {
+    return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
+  }
+
+  function updateCurvePreview() {
+    if (!(waveriderForm instanceof HTMLFormElement)) return;
+    const formData = new FormData(waveriderForm);
+    const span = Number(formData.get('span')) || 0.5;
+    const fctType = String(formData.get('fct_type') || 'Cosine');
+    const iccType = String(formData.get('icc_type') || 'Cosine');
+    const fctVals = parseNumberList(formData.get('fct_abcdn'));
+    const iccVals = parseNumberList(formData.get('icc_abcdn'));
+    const raw = Array.from({ length: 120 }, (_, i) => {
+      const y = -0.5 * span + (span * i) / 119;
+      return {
+        y,
+        fct: curveValue(fctType, fctVals, y, span),
+        icc: curveValue(iccType, iccVals, y, span),
+      };
+    }).filter((point) => Number.isFinite(point.fct) && Number.isFinite(point.icc));
+
+    if (fctEquation) fctEquation.textContent = equationText(fctType, fctVals);
+    if (iccEquation) iccEquation.textContent = equationText(iccType, iccVals);
+    if (!raw.length || !(fctPreviewPath instanceof SVGPathElement) || !(iccPreviewPath instanceof SVGPathElement)) return;
+
+    const yMin = Math.min(...raw.map((p) => p.y));
+    const yMax = Math.max(...raw.map((p) => p.y));
+    const zMin = Math.min(...raw.flatMap((p) => [p.fct, p.icc]));
+    const zMax = Math.max(...raw.flatMap((p) => [p.fct, p.icc]));
+    const project = (y: number, z: number) => ({
+      x: 24 + ((y - yMin) / Math.max(1e-9, yMax - yMin)) * 312,
+      y: 196 - ((z - zMin) / Math.max(1e-9, zMax - zMin)) * 172,
+    });
+
+    fctPreviewPath.setAttribute('d', pathFromPoints(raw.map((p) => project(p.y, p.fct))));
+    iccPreviewPath.setAttribute('d', pathFromPoints(raw.map((p) => project(p.y, p.icc))));
+  }
+
+  function clearThreePlot() {
+    if (threeAnimation) cancelAnimationFrame(threeAnimation);
+    threeAnimation = 0;
+    if (threeControls) threeControls.dispose();
+    if (threeRenderer) threeRenderer.dispose();
+    threeRenderer = null;
+    threeScene = null;
+    threeCamera = null;
+    threeControls = null;
+    if (waveriderPlotly) waveriderPlotly.replaceChildren();
+  }
+
+  function lineObject(line: any, color: number, opacity = 1) {
+    const points = (line.x || []).map((x: number, index: number) => new THREE.Vector3(x, line.y[index], line.z[index]));
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({
+      color,
+      transparent: opacity < 1,
+      opacity,
+    });
+    return new THREE.Line(geometry, material);
+  }
+
+  function renderInteractiveGeometry(geometry: any) {
+    if (!waveriderPlotly) return;
+    clearThreePlot();
+
+    const width = Math.max(320, waveriderPlotly.clientWidth);
+    const height = Math.max(430, waveriderPlotly.clientHeight);
+    threeScene = new THREE.Scene();
+    threeScene.background = new THREE.Color(0xffffff);
+    threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.001, 1000);
+    threeRenderer = new THREE.WebGLRenderer({ antialias: true });
+    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    threeRenderer.setSize(width, height);
+    waveriderPlotly.appendChild(threeRenderer.domElement);
+
+    const group = new THREE.Group();
+    (geometry.bottom || []).forEach((line: any) => group.add(lineObject(line, 0xdc2626)));
+    (geometry.top || []).forEach((line: any) => group.add(lineObject(line, 0x2563eb)));
+    (geometry.shock || []).forEach((line: any) => group.add(lineObject(line, 0x16a34a, 0.38)));
+
+    const leading = geometry.leadingEdge;
+    if (leading?.x?.length) {
+      const points = leading.x.map((x: number, index: number) => new THREE.Vector3(x, leading.y[index], leading.z[index]));
+      const pointGeometry = new THREE.BufferGeometry().setFromPoints(points);
+      const pointMaterial = new THREE.PointsMaterial({ color: 0x111827, size: 0.01, sizeAttenuation: true });
+      group.add(new THREE.Points(pointGeometry, pointMaterial));
+    }
+
+    const box = new THREE.Box3().setFromObject(group);
+    const center = new THREE.Vector3();
+    const size = new THREE.Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    group.position.sub(center);
+    threeScene.add(group);
+
+    const axes = new THREE.AxesHelper(Math.max(size.x, size.y, size.z) * 0.6 || 0.5);
+    threeScene.add(axes);
+    threeScene.add(new THREE.AmbientLight(0xffffff, 1));
+
+    const radius = Math.max(size.x, size.y, size.z) || 1;
+    threeCamera.position.set(radius * 1.35, -radius * 1.4, radius * 0.85);
+    threeCamera.near = radius / 1000;
+    threeCamera.far = radius * 1000;
+    threeCamera.updateProjectionMatrix();
+
+    threeControls = new OrbitControls(threeCamera, threeRenderer.domElement);
+    threeControls.enableDamping = true;
+    threeControls.target.set(0, 0, 0);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!threeRenderer || !threeCamera || !waveriderPlotly) return;
+      const nextWidth = Math.max(320, waveriderPlotly.clientWidth);
+      const nextHeight = Math.max(430, waveriderPlotly.clientHeight);
+      threeCamera.aspect = nextWidth / nextHeight;
+      threeCamera.updateProjectionMatrix();
+      threeRenderer.setSize(nextWidth, nextHeight);
+    });
+    resizeObserver.observe(waveriderPlotly);
+
+    const animate = () => {
+      if (!threeRenderer || !threeScene || !threeCamera) return;
+      threeControls?.update();
+      threeRenderer.render(threeScene, threeCamera);
+      threeAnimation = requestAnimationFrame(animate);
+    };
+    animate();
+  }
+
+  function clearSupportPlot() {
+    if (supportAnimation) cancelAnimationFrame(supportAnimation);
+    supportAnimation = 0;
+    supportControls?.dispose();
+    supportRenderer?.dispose();
+    supportRenderer = null;
+    supportScene = null;
+    supportCamera = null;
+    supportControls = null;
+    supportPlaybackGroup = null;
+    supportPolygonPlot?.replaceChildren();
+  }
+
+  function polygonMesh(points: THREE.Vector3[], color: number, opacity: number) {
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+      ...points[0].toArray(), ...points[1].toArray(), ...points[2].toArray(),
+      ...points[0].toArray(), ...points[2].toArray(), ...points[3].toArray(),
+    ]);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.computeVertexNormals();
+    const material = new THREE.MeshBasicMaterial({
+      color,
+      opacity,
+      side: THREE.DoubleSide,
+      transparent: opacity < 1,
+    });
+    return new THREE.Mesh(geometry, material);
+  }
+
+  function polygonOutline(points: THREE.Vector3[], color: number) {
+    const geometry = new THREE.BufferGeometry().setFromPoints([...points, points[0]]);
+    return new THREE.Line(geometry, new THREE.LineBasicMaterial({ color, linewidth: 1 }));
+  }
+
+  function vectorFromArray(value: number[]) {
+    return new THREE.Vector3(value?.[0] || 0, value?.[1] || 0, value?.[2] || 0);
+  }
+
+  function addBodyAxes(group: THREE.Group, center: THREE.Vector3, axes: any, scale = 0.14) {
+    const xAxis = vectorFromArray(axes?.x || [1, 0, 0]).normalize();
+    const yAxis = vectorFromArray(axes?.y || [0, 1, 0]).normalize();
+    const zAxis = vectorFromArray(axes?.z || [0, 0, 1]).normalize();
+    group.add(new THREE.ArrowHelper(xAxis, center, scale, 0xdc2626, scale * 0.28, scale * 0.15));
+    group.add(new THREE.ArrowHelper(yAxis, center, scale, 0x16a34a, scale * 0.28, scale * 0.15));
+    group.add(new THREE.ArrowHelper(zAxis, center, scale, 0x2563eb, scale * 0.28, scale * 0.15));
+  }
+
+  function renderPlaybackFrame(step: any) {
+    if (!supportPlaybackGroup) return;
+    supportPlaybackGroup.clear();
+
+    const corners = (step?.corners || []).map((point: number[]) => vectorFromArray(point));
+    if (corners.length !== 4) return;
+
+    supportPlaybackGroup.add(polygonMesh(corners, 0xf97316, 0.78));
+    supportPlaybackGroup.add(polygonOutline(corners, 0x7c2d12));
+    const center = vectorFromArray(step.center || [0, 0, 0]);
+    addBodyAxes(supportPlaybackGroup, center, step.axes, 0.25);
+
+    const footGeometry = new THREE.SphereGeometry(0.035, 18, 18);
+    const colors = [0xdc2626, 0x16a34a, 0x2563eb, 0x9333ea];
+    corners.forEach((corner, index) => {
+      const foot = new THREE.Mesh(
+        footGeometry,
+        new THREE.MeshBasicMaterial({ color: colors[index % colors.length] }),
+      );
+      foot.position.copy(corner);
+      supportPlaybackGroup?.add(foot);
+    });
+  }
+
+  function renderSupportPolygonPlot(data: any) {
+    if (!supportPolygonPlot) return;
+    clearSupportPlot();
+
+    const width = Math.max(320, supportPolygonPlot.clientWidth);
+    const height = Math.max(430, supportPolygonPlot.clientHeight);
+    supportScene = new THREE.Scene();
+    supportScene.background = new THREE.Color(0xffffff);
+    supportCamera = new THREE.PerspectiveCamera(42, width / height, 0.001, 1000);
+    supportRenderer = new THREE.WebGLRenderer({ antialias: true });
+    supportRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    supportRenderer.setSize(width, height);
+    supportPolygonPlot.appendChild(supportRenderer.domElement);
+
+    const group = new THREE.Group();
+    const trajectory = (data.trajectory || []).map((point: number[]) => vectorFromArray(point));
+    const trajectoryGeometry = new THREE.BufferGeometry().setFromPoints(trajectory);
+    group.add(new THREE.Line(trajectoryGeometry, new THREE.LineBasicMaterial({ color: 0x111827, linewidth: 2 })));
+
+    const frames = data.frames || [];
+    const highlight = Math.floor(frames.length * 0.42);
+    frames.forEach((frame: any, frameIndex: number) => {
+      if (frameIndex % 2 !== 0) return;
+      const corners = (frame.corners || []).map((point: number[]) => vectorFromArray(point));
+      if (corners.length !== 4) return;
+      const opacity = frameIndex === highlight || frameIndex === highlight - 1 ? 0.72 : 0.2;
+      group.add(polygonMesh(corners, opacity > 0.5 ? 0x0891b2 : 0x67e8f9, opacity));
+      group.add(polygonOutline(corners, 0x0f172a));
+      if (frameIndex % 6 === 0 || opacity > 0.5) addBodyAxes(group, vectorFromArray(frame.center), frame.axes, opacity > 0.5 ? 0.22 : 0.13);
+    });
+
+    const pointsMaterial = new THREE.PointsMaterial({ color: 0x0f172a, size: 0.025, sizeAttenuation: true });
+    group.add(new THREE.Points(trajectoryGeometry, pointsMaterial));
+    supportPlaybackGroup = new THREE.Group();
+    group.add(supportPlaybackGroup);
+
+    const box = new THREE.Box3().setFromObject(group);
+    const center = new THREE.Vector3();
+    const size = new THREE.Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+    group.position.sub(center);
+    supportScene.add(group);
+    supportScene.add(new THREE.AmbientLight(0xffffff, 1));
+
+    const radius = Math.max(size.x, size.y, size.z) || 1;
+    supportCamera.position.set(radius * 1.35, -radius * 1.7, radius * 0.9);
+    supportCamera.near = radius / 1000;
+    supportCamera.far = radius * 1000;
+    supportCamera.updateProjectionMatrix();
+
+    supportControls = new OrbitControls(supportCamera, supportRenderer.domElement);
+    supportControls.enableDamping = true;
+    supportControls.target.set(0, 0, 0);
+    const gait = data.gait || [];
+    let lastPlaybackIndex = -1;
+    const startTime = performance.now();
+    if (gait.length) renderPlaybackFrame(gait[0]);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (!supportRenderer || !supportCamera || !supportPolygonPlot) return;
+      const nextWidth = Math.max(320, supportPolygonPlot.clientWidth);
+      const nextHeight = Math.max(430, supportPolygonPlot.clientHeight);
+      supportCamera.aspect = nextWidth / nextHeight;
+      supportCamera.updateProjectionMatrix();
+      supportRenderer.setSize(nextWidth, nextHeight);
+    });
+    resizeObserver.observe(supportPolygonPlot);
+
+    const animate = () => {
+      if (!supportRenderer || !supportScene || !supportCamera) return;
+      if (gait.length) {
+        const elapsed = performance.now() - startTime;
+        const playbackIndex = Math.min(gait.length - 1, Math.floor(elapsed / 160));
+        if (playbackIndex !== lastPlaybackIndex) {
+          renderPlaybackFrame(gait[playbackIndex]);
+          lastPlaybackIndex = playbackIndex;
+        }
+      }
+      supportControls?.update();
+      supportRenderer.render(supportScene, supportCamera);
+      supportAnimation = requestAnimationFrame(animate);
+    };
+    animate();
+  }
+
+  async function runSupportPolygonGenerator() {
+    if (!(supportPolygonForm instanceof HTMLFormElement)) return;
+    if (runSupportPolygon instanceof HTMLButtonElement) runSupportPolygon.disabled = true;
+    if (supportPolygonStatus) supportPolygonStatus.textContent = 'Running backend support-polygon generator...';
+
+    try {
+      const formData = new FormData(supportPolygonForm);
+      const payload = Object.fromEntries(formData.entries());
+      const response = await fetch('/api/support-polygon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Support-polygon generation failed.');
+      renderSupportPolygonPlot(data);
+      if (supportPolygonSummary) {
+        const summary = data.summary;
+        supportPolygonSummary.textContent = `${summary.samples} samples, ${summary.gait_steps} gait transitions from x=${summary.x_expr}, y=${summary.y_expr}, z=${summary.z_expr}; footprint ${summary.length} m x ${summary.width} m.`;
+      }
+      if (supportPolygonStatus) supportPolygonStatus.textContent = 'Generated. Results are shown below.';
+    } catch (error) {
+      if (supportPolygonStatus) supportPolygonStatus.textContent = error instanceof Error ? error.message : String(error);
+    } finally {
+      if (runSupportPolygon instanceof HTMLButtonElement) runSupportPolygon.disabled = false;
+    }
+  }
+
+  if (waveriderForm instanceof HTMLFormElement) {
+    waveriderForm.addEventListener('input', () => {
+      updateCurvePreview();
+    });
+    updateCurvePreview();
+  }
+
+  if (runSupportPolygon instanceof HTMLButtonElement) {
+    runSupportPolygon.addEventListener('click', runSupportPolygonGenerator);
+  }
+
+  if (plotWaverider instanceof HTMLButtonElement) {
+    plotWaverider.addEventListener('click', async () => {
+      const payload = collectWaveriderPayload();
+
+      plotWaverider.disabled = true;
+      if (waveriderStatus) waveriderStatus.textContent = 'Running Python waverider generator...';
+
+      try {
+        const response = await fetch('/api/waverider', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Generation failed.');
+        if (!data.ok) {
+          if (waveriderStatus) waveriderStatus.textContent = 'Improper input.';
+          if (fallbackPlot instanceof HTMLImageElement && data.images?.fallback) fallbackPlot.src = `${data.images.fallback}?t=${Date.now()}`;
+          if (fallbackFigure) fallbackFigure.hidden = false;
+          clearThreePlot();
+          if (waveriderSummary) waveriderSummary.textContent = 'Improper input. Showing FCT, ICC, and clipped evolute curves instead.';
+          if (waveriderLog) waveriderLog.textContent = [...(data.log || []), data.detail || ''].join('\n');
+          if (waveriderResults) waveriderResults.hidden = false;
+          return;
+        }
+
+        if (fallbackFigure) fallbackFigure.hidden = true;
+        renderInteractiveGeometry(data.geometry);
+        if (waveriderSummary) {
+          const summary = data.summary;
+          waveriderSummary.textContent = `M=${summary.mach}, beta=${summary.beta_deg} deg, span=${summary.span_m} m, ${summary.leading_edge_points} leading-edge points.`;
+        }
+        if (waveriderLog) {
+          const logLines = [
+            ...(data.log || []),
+            '',
+            'Interactive geometry rendered in browser.',
+          ];
+          waveriderLog.textContent = logLines.join('\n');
+        }
+        if (waveriderResults) waveriderResults.hidden = false;
+        if (waveriderStatus) waveriderStatus.textContent = 'Generated. Results are shown below.';
+      } catch (error) {
+        if (waveriderStatus) {
+          waveriderStatus.textContent = error instanceof Error ? error.message : String(error);
+        }
+      } finally {
+        plotWaverider.disabled = false;
+      }
+    });
+  }
+
+  if (runInletMatlab instanceof HTMLButtonElement) {
+    runInletMatlab.addEventListener('click', async () => {
+      runInletMatlab.disabled = true;
+      if (inletMatlabStatus) inletMatlabStatus.textContent = 'Running MATLAB inlet script...';
+      try {
+        const formData = inletForm instanceof HTMLFormElement ? new FormData(inletForm) : new FormData();
+        const payload = Object.fromEntries([...formData.entries()].map(([key, value]) => [key, Number(value)]));
+        const response = await fetch('/api/inlet-matlab', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.error || 'MATLAB run failed.');
+        if (inletMatlabPlot instanceof HTMLImageElement) inletMatlabPlot.src = `${data.image}?t=${Date.now()}`;
+        if (inletMatlabFigure) inletMatlabFigure.hidden = false;
+        if (inletMatlabStatus) {
+          inletMatlabStatus.textContent = `Inlet plots refreshed. ${data.summary.valid} valid cases, target throat ${data.summary.target_throat.toFixed(4)} m.`;
+        }
+      } catch (error) {
+        if (inletMatlabStatus) inletMatlabStatus.textContent = error instanceof Error ? error.message : String(error);
+      } finally {
+        runInletMatlab.disabled = false;
+      }
+    });
+  }
+</script>
